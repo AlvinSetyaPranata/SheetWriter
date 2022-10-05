@@ -66,7 +66,7 @@ class MainLayout(BaseLayout):
         self.value_label = Label(self.value_group, text="Nilai")
         self.value_input = Entry(self.value_group)
     
-
+        self.action_btn = Button(self.container, text="Simpan Perubahan")
 
     def render(self):
         self.prepare_obj()
@@ -79,6 +79,7 @@ class MainLayout(BaseLayout):
         self.name_group.grid(row=0, column=1, padx=10, pady=10)
         self.datetime_group.grid(row=1, column=0, padx=10, pady=10)
         self.value_group.grid(row=1, column=1, pady=10, padx=10)
+        self.action_btn.grid(row=2, column=0, columnspan=2)
 
 
         self.date_group.pack(side=LEFT, padx=12)

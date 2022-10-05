@@ -12,12 +12,23 @@ class ConfigLayout(BaseLayout):
         self.container = Frame(self.main_frame)
 
 
-        self.file_group = LabelFrame(self.container, text="Opsi file")
-        
-        self.file_output_group = Frame(self.file_group)
-        self.fout_label = Label(self.file_output_group, text="Nama file output")
-        self.fout_input = Entry(self.file_group)
+        self.cell_configuration = LabelFrame(self.container, text="Konfigurasi Excel")
 
+        self.year_conf_group = Frame(self.cell_configuration)
+        self.year_conf_label = Label(self.year_conf_group, text="Cell tahun pada Excel")
+        self.year_conf_input = Entry(self.year_conf_group)
+
+        self.month_conf_group = Frame(self.cell_configuration)
+        self.month_conf_label = Label(self.month_conf_group, text="Cell bulan pada Excel")
+        self.month_conf_input = Entry(self.month_conf_group)
+
+        self.product_conf_group = Frame(self.cell_configuration)
+        self.product_conf_label = Label(self.product_conf_group, text="Cell nama pada Excel")
+        self.product_conf_input = Entry(self.product_conf_group)
+
+        self.code_conf_group = Frame(self.cell_configuration)
+        self.code_conf_label = Label(self.code_conf_group, text="Cell kode pada Excel")
+        self.code_conf_input = Entry(self.code_conf_group)
 
 
     def render(self):
@@ -27,11 +38,23 @@ class ConfigLayout(BaseLayout):
         self.main_frame.pack(fill=BOTH, expand=True)
         self.container.place(y=500//2-70, x=40)
 
-        self.file_group.grid(row=0, column=0, ipadx=20, ipady=20)
-        
-        self.file_output_group.pack()
-        self.fout_label.pack(anchor='w')
-        self.fout_input.pack()
+        self.cell_configuration.grid(row=0, column=0, ipadx=20)
 
+        # Excel sections
+        self.year_conf_group.pack(pady=5)
+        self.year_conf_label.pack(side=LEFT)
+        self.year_conf_input.pack(side=LEFT, padx=2, ipadx=2, ipady=2)
+        
+        self.month_conf_group.pack(pady=5)
+        self.month_conf_label.pack(side=LEFT)
+        self.month_conf_input.pack(side=LEFT, padx=2, ipadx=2, ipady=2)
+        
+        self.product_conf_group.pack(pady=5)
+        self.product_conf_label.pack(side=LEFT)
+        self.product_conf_input.pack(side=LEFT, padx=2, ipadx=2, ipady=2)
+
+        self.code_conf_group.pack(pady=5)
+        self.code_conf_label.pack(side=LEFT)
+        self.code_conf_input.pack(side=LEFT, padx=2, ipadx=2, ipady=2)
 
         self._rendered = True
