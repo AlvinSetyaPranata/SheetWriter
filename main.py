@@ -1,4 +1,4 @@
-from modules.layouts import layout
+from modules.layouts import main
 from tkinter import ttk
 
 

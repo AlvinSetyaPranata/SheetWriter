@@ -1,19 +1,14 @@
-from tkinter import (
-    BOTH, CENTER, LEFT, Label, Frame, Button, Entry, OptionMenu, StringVar
-)
-from typing_extensions import IntVar
+from . import *
 
 
-
-class Main_Layout:
-    def __init__(self, parent, data={"date" : [], "month" : [], "year" : []}):
+class MainLayout(BaseLayout):
+    def __init__(self, parent, data={}, handlers={}):
         """"
         Parent should Notebook object
         """
-        
-        self.parent = parent
-        self.rendered_ = False    # flag whether the all widgets are rendered 
+        super().__init__(**handlers)
 
+        self.parent = parent
 
         self.date_value = StringVar()
         self.month_value = StringVar()
@@ -22,6 +17,7 @@ class Main_Layout:
         self.year_data = data["year"]
         self.month_data = data["month"]
         self.date_data = data["date"]
+
 
     def prepare_obj(self):
         self.main_frame = Frame(self.parent)
@@ -108,4 +104,4 @@ class Main_Layout:
         self.value_input.pack(ipady=2)
 
 
-        self.rendered_ = True
+        self._rendered = True
