@@ -2,8 +2,8 @@ from . import *
 
 
 class ConfigLayout(BaseLayout):
-    def __init__(self, parent, **handlers):
-        super().__init__(**handlers)
+    def __init__(self, parent):
+        super().__init__()
 
         self.parent = parent
 
@@ -36,7 +36,7 @@ class ConfigLayout(BaseLayout):
 
 
         self.main_frame.pack(fill=BOTH, expand=True)
-        self.container.place(y=500//2-70, x=40)
+        self.container.pack(expand=True)
 
         self.cell_configuration.grid(row=0, column=0, ipadx=20)
 

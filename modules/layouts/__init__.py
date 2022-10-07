@@ -1,29 +1,18 @@
 from tkinter import (
-    BOTH, CENTER, LEFT, Label, Frame, Button, Entry, OptionMenu, StringVar, LabelFrame
+    BOTH, CENTER, LEFT, Label, Frame, StringVar, LabelFrame, Entry, DISABLED, X, NORMAL
+)
+from tkinter.ttk import (
+    Button
 )
 
-
 class BaseLayout:
-    def __init__(self, **handlers):
-
-        try:
-            self.handlers = handlers
-
-        except KeyError:
-            pass
-
+    def __init__(self):
         self._rendered = False
 
 
-    @property
-    def assign_handler(self):
-        if not self.handlers:
-            raise ValueError("No such handlers are defined!")
-
-
-        for widget in self.handlers:
-            widget.bind(self.handlers[widget][0], self.handlers[widget][1])
-
+    def _prepare_obj(self):
+        # this method should not be called outside function and called after render function get called
+        pass
 
     def render(self):
         # this method should be overwritten

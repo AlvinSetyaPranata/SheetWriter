@@ -2,11 +2,11 @@ from . import *
 
 
 class MainLayout(BaseLayout):
-    def __init__(self, parent, data={}, handlers={}):
+    def __init__(self, parent, data={}):
         """"
         Parent should Notebook object
         """
-        super().__init__(**handlers)
+        super().__init__()
 
         self.parent = parent
 
@@ -73,7 +73,7 @@ class MainLayout(BaseLayout):
 
         self.main_frame.pack(fill=BOTH, expand=True)
 
-        self.container.place(y=500//2-70, x=40)
+        self.container.pack(anchor=CENTER, expand=True)
 
         self.code_group.grid(row=0, column=0, padx=10, pady=10)
         self.name_group.grid(row=0, column=1, padx=10, pady=10)

@@ -5,3 +5,14 @@ config_layout = {
     "Product name Row" : [row],
     "Codename Row" : [row]
 }
+
+
+
+changes_layout = {
+    "column" : [codename] [product name] [datetime] [quantity] [action]
+}
+
+
+data that passed in = {
+    [[data], ]
+}
