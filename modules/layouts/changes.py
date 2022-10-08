@@ -15,12 +15,15 @@ class ChangesLayout(BaseLayout):
     def load_images(self):
         _undo_image = Image.open("assets/undo.png")
         _delete_image = Image.open("assets/delete.png")
+        _export_image = Image.open("assets/export.png")
 
         _undo_image = _undo_image.resize((20, 20), Image.ANTIALIAS)
         _delete_image = _delete_image.resize((20, 20), Image.ANTIALIAS)
+        _export_image = _export_image.resize((20, 20), Image.ANTIALIAS)
 
         self._undo_image = ImageTk.PhotoImage(_undo_image)
         self._delete_image = ImageTk.PhotoImage(_delete_image)
+        self._export_image = ImageTk.PhotoImage(_export_image)
 
 
     def handle_delete(self, table, *items):
@@ -30,7 +33,7 @@ class ChangesLayout(BaseLayout):
             self.detached_items.add(item)
 
         self.remove_btn.configure(state=DISABLED)
-        self.undo_btn.configure(state=NORMAL)        
+        self.undo_btn.configure(state=NORMAL)
         
 
     def handle_undo(self, table):
@@ -69,20 +72,19 @@ class ChangesLayout(BaseLayout):
         self.remove_btn = Button(self.command_sector, text="Hapus", state=DISABLED, image=self._delete_image, compound=LEFT)
         self.undo_btn = Button(self.command_sector, text="Undo", state=DISABLED, image=self._undo_image, compound=LEFT)
 
+        self.export_btn = Button(self.command_sector, text="Export", state=DISABLED, image=self._export_image, compound=LEFT)
+
         self.table = Table(self.main_frame, ("Kode Barang", "Nama Barang", "Tanggal", "Kuantitas"), onSelect=self.handle_select, mode="extended")
 
     def render(self):
         self._prepare_obj()
 
-
         self.main_frame.pack(fill=BOTH, expand=True)
         self.command_sector.pack(fill=X, padx=2, pady=5)
         self.remove_btn.pack(side=LEFT, padx=4)
-        self.undo_btn.pack(side=LEFT)
+        self.undo_btn.pack(side=LEFT, padx=4)
+        self.export_btn.pack(side=LEFT)
 
         # table
         self.table.render()
         self._rendered = True
-
-
-        self.table.add_row(["0ABC", "HEDNA", "29-30-40", "4"])

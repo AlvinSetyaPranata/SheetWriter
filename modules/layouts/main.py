@@ -1,8 +1,10 @@
+from modules.handler.autocomplete import AutoSearch
+from modules.utils.search import Search
 from . import *
 
 
 class MainLayout(BaseLayout):
-    def __init__(self, parent, data={}):
+    def __init__(self, parent, data={"year" : (), "month" :  (), "date" : (), "name" : (), "code" : ()}):
         """"
         Parent should Notebook object
         """
@@ -19,7 +21,14 @@ class MainLayout(BaseLayout):
         self.date_data = data["date"]
 
 
-    def prepare_obj(self):
+        self.autosearch = AutoSearch(data["name"])
+
+
+    def handle_autosearch(self, event):
+        matches = self.autosearch.search(event.keysym)
+
+
+    def _prepare_obj(self):
         self.main_frame = Frame(self.parent)
 
         self.container = Frame(self.main_frame)
@@ -29,13 +38,15 @@ class MainLayout(BaseLayout):
 
         self.code_label = Label(self.code_group, text="Kode Barang")
         self.code_input = Entry(self.code_group)
+        self.code_input.bind("<KeyRelease>", self.handle_autosearch)
+        self.search_ = Search(self.code_group)
 
 
         # NameField Group
         self.name_group = Frame(self.container)
 
         self.name_label = Label(self.name_group, text="Nama Barang")
-        self.name_input = Entry(self.name_group)
+        self.name_input = Entry(self.name_group, state="readonly")
 
 
         # Datetime Group
@@ -69,7 +80,7 @@ class MainLayout(BaseLayout):
         self.action_btn = Button(self.container, text="Simpan Perubahan")
 
     def render(self):
-        self.prepare_obj()
+        self._prepare_obj()
 
         self.main_frame.pack(fill=BOTH, expand=True)
 
@@ -88,6 +99,7 @@ class MainLayout(BaseLayout):
 
         self.code_label.pack(anchor='w')
         self.code_input.pack(ipady=2)
+        self.search_.render()
 
         self.name_label.pack(anchor='w')
         self.name_input.pack(ipady=2)
