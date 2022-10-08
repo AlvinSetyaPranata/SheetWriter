@@ -2,7 +2,7 @@ from . import *
 
 
 class Table:
-    def __init__(self, parent, header_data, fill_parent=False, onSelect=None):
+    def __init__(self, parent, header_data, fill_parent=False, onSelect=None, mode="browse"):
         """
         :header_data => contains all data in header
         """
@@ -17,13 +17,13 @@ class Table:
         
         self.container = Frame(self.parent)
         self.scroll_upper_container = Frame(self.container)
-        self.table = Treeview(self.scroll_upper_container, columns=self.header_data, show="headings", selectmode="browse")
+        self.table = Treeview(self.scroll_upper_container, columns=self.header_data, show="headings", selectmode=mode)
         self.scroll_y = Scrollbar(self.scroll_upper_container, orient=VERTICAL, command=self.table.yview)
         self.scroll_x = Scrollbar(self.container, orient=HORIZONTAL, command=self.table.xview)
 
         self.table.configure(yscrollcommand=self.scroll_y.set, xscrollcommand=self.scroll_x.set)
 
-        self.table.bind("<<TreeviewSelect>>", onSelect)
+        self.table.bind("<<TreeviewSelect>>", lambda event: onSelect(self.table))
 
 
         for col in self.table["columns"]:
@@ -51,17 +51,30 @@ class Table:
             self.table.heading(header, text=header, anchor=CENTER)
 
 
-    def add_row(self, data):
+    @classmethod
+    def fill_null(cls, list_, length):
+        for _ in range(len(list_) - length):
+            list_.append("")
+
+        return list_
+
+
+    def add_row(self, *data):
         """
-        if length :data is not equal to header data then the empty cell will be created with empty string by default
+        if length :data is less than length of header data then the empty cell will be created with empty string by default
 
         """
 
-        if len(data[0]) > len(self.header_data):
-            raise ValueError("Length of row out of header range!")
-
+        _header_length = len(self.header_data)
+        
 
         for row in data:
+            if len(row) > _header_length:
+                raise ValueError("Length of row out of header range!")
+
+            elif len(row) < _header_length:
+                row = self.fill_null(row, _header_length)
+
             self.table.insert('', END, values=row)
         
         if self._rendered:

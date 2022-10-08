@@ -30,6 +30,8 @@ class ConfigLayout(BaseLayout):
         self.code_conf_label = Label(self.code_conf_group, text="Cell kode pada Excel")
         self.code_conf_input = Entry(self.code_conf_group)
 
+        self.apply_btn = Button(self.cell_configuration, text="Simpan perubahan")
+
 
     def render(self):
         self._prepare_obj()
@@ -38,7 +40,7 @@ class ConfigLayout(BaseLayout):
         self.main_frame.pack(fill=BOTH, expand=True)
         self.container.pack(expand=True)
 
-        self.cell_configuration.grid(row=0, column=0, ipadx=20)
+        self.cell_configuration.grid(row=0, column=0, ipadx=20, ipady=5)
 
         # Excel sections
         self.year_conf_group.pack(pady=5)
@@ -56,5 +58,7 @@ class ConfigLayout(BaseLayout):
         self.code_conf_group.pack(pady=5)
         self.code_conf_label.pack(side=LEFT)
         self.code_conf_input.pack(side=LEFT, padx=2, ipadx=2, ipady=2)
+
+        self.apply_btn.pack()
 
         self._rendered = True

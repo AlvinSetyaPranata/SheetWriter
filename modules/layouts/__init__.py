@@ -1,9 +1,7 @@
 from tkinter import (
-    BOTH, CENTER, LEFT, Label, Frame, StringVar, LabelFrame, Entry, DISABLED, X, NORMAL
+    BOTH, CENTER, LEFT, Label, Frame, StringVar, LabelFrame, Entry, DISABLED, X, NORMAL, Button
 )
-from tkinter.ttk import (
-    Button
-)
+
 
 class BaseLayout:
     def __init__(self):
