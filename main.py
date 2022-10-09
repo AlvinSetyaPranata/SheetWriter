@@ -16,7 +16,6 @@ class Main:
         # define Tabs
         self.tabs = Notebook(self.window)
 
-
         self.main_layout = main.MainLayout(self.tabs)
         self.config_layout = config.ConfigLayout(self.tabs)
         self.changes_layout = changes.ChangesLayout(self.tabs)

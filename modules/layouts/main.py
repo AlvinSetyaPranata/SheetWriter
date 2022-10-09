@@ -21,11 +21,46 @@ class MainLayout(BaseLayout):
         self.date_data = data["date"]
 
 
-        self.autosearch = AutoSearch(data["name"])
+        self.autosearch = AutoSearch(["hello" + str(x) for x in range(10)])
 
 
-    def handle_autosearch(self, event):
-        matches = self.autosearch.search(event.keysym)
+
+    def handle_update_input(self, word):
+        self.name_input.configure(state="normal")
+        self.name_input.delete(0, END)
+        self.name_input.insert(0, word)
+        self.name_input.configure(state="readonly")
+
+        self.code_input.delete(0, END)
+        self.code_input.insert(0, word)
+
+
+    def handle_autosearch(self):
+        matches = self.autosearch.search(self.code_input.get())
+
+        if not matches:
+            self.search_.switch_off()
+            return
+
+
+        for word in matches:
+            self.search_.insert(word, lambda btn_text: self.handle_update_input(btn_text))
+
+        if len(matches) == 1:
+            self.handle_update_input(matches[0])
+
+
+    def handle_input_focus(self, event):
+        self.search_.switch_off()  
+        
+        if event.keysym == "Escape":
+            return
+
+
+        # print(self.search_.current_state)
+        self.search_.switch_on()
+        self.handle_autosearch()
+
 
 
     def _prepare_obj(self):
@@ -38,15 +73,16 @@ class MainLayout(BaseLayout):
 
         self.code_label = Label(self.code_group, text="Kode Barang")
         self.code_input = Entry(self.code_group)
-        self.code_input.bind("<KeyRelease>", self.handle_autosearch)
-        self.search_ = Search(self.code_group)
+        self.code_input.bind("<KeyRelease>", self.handle_input_focus)
+        self.code_input.bind("<FocusOut>", lambda x: self.search_.switch_off())
+        self.search_ = Search(self.parent)
 
 
         # NameField Group
         self.name_group = Frame(self.container)
 
         self.name_label = Label(self.name_group, text="Nama Barang")
-        self.name_input = Entry(self.name_group, state="readonly")
+        self.name_input = Entry(self.name_group, state="readonly", fg="black")
 
 
         # Datetime Group
