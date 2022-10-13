@@ -1,5 +1,5 @@
 from modules.handler.autocomplete import AutoSearch
-from modules.utils.search import Search
+from modules.components.search import Search
 from . import *
 
 

@@ -1,5 +1,5 @@
 from . import *
-from modules.utils.table import Table
+from modules.components.table import Table
 from PIL import Image, ImageTk
 
 

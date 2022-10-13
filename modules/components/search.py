@@ -19,7 +19,7 @@ class Search:
 
 
     def prepare_obj(self):
-        self.main_frame = Frame(self.parent, bg="white", height=100)
+        self.main_frame = Frame(self.parent, bg="white", height=20)
 
         self.container = Listbox(self.main_frame)
         self.y_scroll = Scrollbar(self.main_frame, orient=VERTICAL, command=self.container.yview)
