@@ -1,40 +1,30 @@
 import re
 from json import load
 from modules.utils.reader import Reader
-from os.path import join
+from os.path import join, dirname
 
 
 class AutoSearch:
-    def __init__(self, path_to_file, config_path=join(__file__, "default_config.json")):
+    def __init__(self, reader_handler):
         """
         :path_to_file should be a file path that represent what is going to search
         :config_path is the path of the configuration file
         """
-        self._path = path_to_file
-        self._config_path = config_path
 
-        self.codes = []
+        self._handler = reader_handler
 
-        self.configs = load(open(self._config_path, "r"))
-
-        self._handler = Reader(self._path, self.configs)
+        self.codes = self._handler.get_codes()
+        self.names = self._handler.get_names()
 
 
 
-
-    def search(self, keyword, current_key):
+    def search_by_code(self, current_key):
         if not current_key:
             return []
-        
+
+        ex_ = re.compile(f"{current_key}+")   
 
 
-        ex_ = re.compile(f"{current_key}+")        
-
-        # for word in self.data:
-        #     found = ex_.search(word)
-        #     print(found)
-
-
-        return [word for word in self.data if not ex_.search(word) is None]
+        return [word for word in self.codes if not ex_.search(word) is None]
 
 

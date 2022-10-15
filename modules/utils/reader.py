@@ -289,21 +289,30 @@ class Reader(XlsSupport):
             return self._years
 
 
-        for cell in self._wb[self.config["year_coords"]]:
-            self._years[cell.value]
+        for coord in self.config["year_coords"]:
+            row, col_start, _, col_end = self.convert_coord_xls(coord)
+
+            _year = list(self._ws.iter_cols(min_col=col_start+1, max_col=col_end+1, min_row=row+1, max_row=row+1))[0][0].value
+
+            self._years[self.wrap_year(_year)] = []
+
 
         return self._years
 
-        return self._years
     
     def get_names(self, update=False):
         if self._names and not update:
             return self._names
 
-        row, col = self.convert_coord_xls(self.config["name_coords"], reverse=True)
+        if self.xls_type:
+            row, col = self.convert_coord_xls(self.config["name_coords"], reverse=True)
+
+            self._names = self.get_row(col, row)
+
+            return self._names
 
 
-        self._names = self.get_row(col, row)
+        self._names = [cell for cell in self._ws[self.config["name_coords"]]]
 
         return self._names
 
@@ -312,8 +321,16 @@ class Reader(XlsSupport):
         if self._codes and not update:
             return self._codes
 
-        row, col = self.convert_coord_xls(self.config["code_coords"], reverse=True)
 
-        self._codes = [str(int(value)) if value != "" else value for value in self.get_row(col, row)]
+        if self.xls_type:
+            row, col = self.convert_coord_xls(self.config["code_coords"], reverse=True)
+
+            self._codes = [str(int(value)) if value != "" else value for value in self.get_row(col, row)]
+
+            return self._codes
+
+
+        self._codes = [cell for cell in self._wb[self.config["code_coords"]]]
+        
 
         return self._codes

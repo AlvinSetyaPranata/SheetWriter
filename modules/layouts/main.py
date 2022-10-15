@@ -1,10 +1,12 @@
 from modules.handler.autocomplete import AutoSearch
 from modules.components.search import Search
+from modules.handler.config import Config
+from modules.utils.reader import Reader
 from . import *
-
+from tkinter import filedialog
 
 class MainLayout(BaseLayout):
-    def __init__(self, parent, data={"year" : (), "month" :  (), "date" : (), "name" : (), "code" : ()}):
+    def __init__(self, parent):
         """"
         Parent should Notebook object
         """
@@ -16,13 +18,19 @@ class MainLayout(BaseLayout):
         self.month_value = StringVar()
         self.year_value = StringVar()
 
-        self.year_data = data["year"]
-        self.month_data = data["month"]
-        self.date_data = data["date"]
+        self.handler_ = self.load_file()
+
+        self.autosearch = AutoSearch(self.handler_)
+
+        # self.year_data = data["year"]
+        # self.month_data = data["month"]
+        # self.date_data = data["date"]
 
 
-        self.autosearch = AutoSearch(["hello" + str(x) for x in range(10)])
-
+    def load_file(self):
+        _config = Config(Config.resolve_parent_path(__file__, "default_config", parent_=1))
+        
+        return Reader(filedialog.askopenfilename(filetypes=(("Excel 2003", ".xls"), ("Excel 2007", ".xlsx"))), _config.get_config("all"))
 
 
     def handle_update_input(self, word):
@@ -36,7 +44,7 @@ class MainLayout(BaseLayout):
 
 
     def handle_autosearch(self):
-        matches = self.autosearch.search(self.code_input.get())
+        matches = self.autosearch.search_by_code(self.code_input.get())
 
         if not matches:
             self.search_.switch_off()
