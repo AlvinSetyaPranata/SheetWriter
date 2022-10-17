@@ -3,6 +3,10 @@ from modules.layouts import (
 )
 from tkinter import BOTH, Tk
 from tkinter.ttk import Notebook
+from modules.utils.reader import Reader
+from tkinter import filedialog
+from modules.handler.config import Config
+from os.path import (join, dirname)
 
 
 class Main:
@@ -16,13 +20,17 @@ class Main:
         # define Tabs
         self.tabs = Notebook(self.window)
 
-        self.main_layout = main.MainLayout(self.tabs)
+        _config = Config(join(dirname(__file__), "modules", "default_config"))
+
+
         self.config_layout = config.ConfigLayout(self.tabs)
+        self.main_layout = main.MainLayout(self.tabs, Reader(self.config_layout.current_filename, _config.get_config("all")))
         self.changes_layout = changes.ChangesLayout(self.tabs)
 
         self.main_layout._prepare_obj()
         self.config_layout._prepare_obj()
         self.changes_layout._prepare_obj()
+
 
 
     def run(self):

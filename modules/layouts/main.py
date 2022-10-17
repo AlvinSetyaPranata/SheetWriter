@@ -1,14 +1,13 @@
 from modules.handler.autocomplete import AutoSearch
 from modules.components.search import Search
-from modules.handler.config import Config
-from modules.utils.reader import Reader
 from . import *
-from tkinter import filedialog
+
 
 class MainLayout(BaseLayout):
-    def __init__(self, parent):
+    def __init__(self, parent, f_handler):
         """"
         Parent should Notebook object
+        :f_handler 
         """
         super().__init__()
 
@@ -18,29 +17,21 @@ class MainLayout(BaseLayout):
         self.month_value = StringVar()
         self.year_value = StringVar()
 
-        self.handler_ = self.load_file()
 
-        self.autosearch = AutoSearch(self.handler_)
+        self.autosearch = AutoSearch(f_handler)
 
-        # self.year_data = data["year"]
-        # self.month_data = data["month"]
-        # self.date_data = data["date"]
+    def update_autosearch(self, f_handler):
+        pass
 
 
-    def load_file(self):
-        _config = Config(Config.resolve_parent_path(__file__, "default_config", parent_=1))
-        
-        return Reader(filedialog.askopenfilename(filetypes=(("Excel 2003", ".xls"), ("Excel 2007", ".xlsx"))), _config.get_config("all"))
-
-
-    def handle_update_input(self, word):
+    def handle_update_input(self, name, code):
         self.name_input.configure(state="normal")
         self.name_input.delete(0, END)
-        self.name_input.insert(0, word)
+        self.name_input.insert(0, name)
         self.name_input.configure(state="readonly")
 
         self.code_input.delete(0, END)
-        self.code_input.insert(0, word)
+        self.code_input.insert(0, code)
 
 
     def handle_autosearch(self):
@@ -51,11 +42,8 @@ class MainLayout(BaseLayout):
             return
 
 
-        for word in matches:
-            self.search_.insert(word, lambda btn_text: self.handle_update_input(btn_text))
-
-        if len(matches) == 1:
-            self.handle_update_input(matches[0])
+        for match in matches:
+            self.search_.insert(match[0].value, lambda: self.handle_update_input(match[1].value, match[0].value))
 
 
     def handle_input_focus(self, event):

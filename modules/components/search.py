@@ -15,7 +15,7 @@ class Search:
         if not self._rendered:
             raise Exception("Must render the parent before calling this method")
 
-        Button(self.container, text=text, command=lambda: cmd(text), bd=1, pady=0, width=17, bg="white", fg="black", relief=FLAT).pack(side=TOP, fill=X)
+        Button(self.container, text=text, command=cmd, bd=1, pady=0, width=17, bg="white", fg="black", relief=FLAT).pack(side=TOP, fill=X)
 
 
     def prepare_obj(self):

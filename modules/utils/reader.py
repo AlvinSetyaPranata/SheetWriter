@@ -54,7 +54,27 @@ class XlsSupport:
         if skip_empty:
             return [value for value in self._ws.col_values(col, start_rowx=start_row) if value != ""]
 
-        return self._ws.col_values(col, start_rowx=start_row)
+        res = []
+
+        cells = self._ws.col_slice(col, start_rowx=start_row)
+        
+        for cell in cells:
+            # print(cell.value, type(cell.value),)
+            if type(cell.value) is float:
+                res.append(
+                XlsCell(start_row, str(int(cell.value)))
+                )
+
+            else:
+                res.append(
+                XlsCell(self.convert_coord_xls_reverse(((start_row, col))), str(cell.value))
+                )
+
+            start_row += 1
+
+        return res
+
+        # return self._ws.col_slice(col, start_rowx=start_row)
 
 
     def get_col_range(self, coord_range):
@@ -127,13 +147,12 @@ class XlsSupport:
         for coord in coord_ranges:
 
             start_cell, end_cell = self.split_coord_ranges(coord)
-
-
             cells = []
 
-            for char in range(ord(start_cell[1]), ord(end_cell[1]) + 1):
+            # for char in range(ord(start_cell[1]), ord(end_cell[1]) + 1):
+            for index in range(ABREVIATIONS.index(start_cell[1]), ABREVIATIONS.index(end_cell[1]) + 1):
 
-                cur_coordinate = "".join((chr(char), start_cell[0]))
+                cur_coordinate = "".join((ABREVIATIONS[index], start_cell[0]))
 
 
                 
@@ -181,7 +200,7 @@ class XlsSupport:
         for cell in cells:
             res.append(
                 "".join(
-                    [cell[0], ABREVIATIONS[cell[1]]]
+                    (ABREVIATIONS[cell[1]], str(cell[0]))
                 )
             )
 
@@ -242,13 +261,22 @@ class Reader(XlsSupport):
 
 
     @classmethod
-    def wrap_year(self, value):
+    def wrap_year(cls, value):
         value = value.split()
         
         if len(value) != 3:
             return
 
         return value[-1]
+
+    @classmethod
+    def pack_months(cls, value):
+        res = []
+
+        for cell in value:
+            res.append(cell[0])
+
+        return res
 
 
     def get_months(self, update=False):
@@ -274,6 +302,22 @@ class Reader(XlsSupport):
 
             return self._years
 
+        for coord in self.config["year_coords"]:
+            row, col_start, _, col_end = self.convert_coord_xls(coord)
+
+            months.append(tuple(self._ws.iter_cols(min_row=row+2, max_row=row+2, min_col=col_start+1, max_col=col_end+1)))
+
+
+        counter = 0
+
+        for year in self._years.copy():
+            self._years[year] = self.pack_months(months[counter])
+
+            counter += 1
+
+        del months, counter
+        return self._years
+
 
     def get_years(self, update=False):
         if self._years and not update:
@@ -292,7 +336,7 @@ class Reader(XlsSupport):
         for coord in self.config["year_coords"]:
             row, col_start, _, col_end = self.convert_coord_xls(coord)
 
-            _year = list(self._ws.iter_cols(min_col=col_start+1, max_col=col_end+1, min_row=row+1, max_row=row+1))[0][0].value
+            _year = tuple(self._ws.iter_cols(min_col=col_start+1, max_col=col_end+1, min_row=row+1, max_row=row+1))[0][0].value
 
             self._years[self.wrap_year(_year)] = []
 
@@ -312,7 +356,10 @@ class Reader(XlsSupport):
             return self._names
 
 
-        self._names = [cell for cell in self._ws[self.config["name_coords"]]]
+
+        row, col = self.convert_coord_xls(self.config["name_coords"], reverse=True)
+
+        self._names = self.pack_months(self._ws.iter_rows(min_col=col, max_col=col, min_row=row))
 
         return self._names
 
@@ -325,12 +372,13 @@ class Reader(XlsSupport):
         if self.xls_type:
             row, col = self.convert_coord_xls(self.config["code_coords"], reverse=True)
 
-            self._codes = [str(int(value)) if value != "" else value for value in self.get_row(col, row)]
+            self._codes = self.get_row(col, row)
 
             return self._codes
 
+        row, col = self.convert_coord_xls(self.config["code_coords"], reverse=True)
 
-        self._codes = [cell for cell in self._wb[self.config["code_coords"]]]
+        self._codes = self.pack_months(self._ws.iter_rows(min_row=row, min_col=col, max_col=col))
         
 
         return self._codes
