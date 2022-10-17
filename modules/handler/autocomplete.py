@@ -12,13 +12,26 @@ class AutoSearch:
         """
 
         self._handler = reader_handler
+        self.data_loaded = False
+        self.codes = []
+        self.names = []
+        self.years = {}
+
+
+        self.load_data()
+
+
+    def load_data(self):
+        if not self._handler.loaded:
+            return
 
         self.codes = self._handler.get_codes()
         self.names = self._handler.get_names()
         self.years = self._handler.get_years()
+        self.data_loaded = True
 
     def search_years(self, current_key):
-        if not current_key:
+        if not current_key or self.data_loaded == False:
             return []
 
         res = []
@@ -33,16 +46,17 @@ class AutoSearch:
 
 
     def search_by_code(self, current_key):
-        if not current_key:
+        if not current_key or self.data_loaded == False:
             return []
 
         res = []
 
         ex_ = re.compile(f"{current_key}+")   
 
+
         for i in range(len(self.codes)):
             # res.append(word)
-            if not ex_.search(self.codes[i].value) is None:
+            if ex_.search(str(self.codes[i].value)):
                 res.append((self.codes[i], self.names[i]))
 
         return res

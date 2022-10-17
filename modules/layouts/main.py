@@ -12,19 +12,24 @@ class MainLayout(BaseLayout):
         super().__init__()
 
         self.parent = parent
-
+        self.autosearch = None
+        
         self.date_value = StringVar()
         self.month_value = StringVar()
         self.year_value = StringVar()
 
+        self.load_autosearch(f_handler)
+
+    def load_autosearch(self, f_handler):
+        if not f_handler:
+            return
 
         self.autosearch = AutoSearch(f_handler)
 
-    def update_autosearch(self, f_handler):
-        pass
 
 
     def handle_update_input(self, name, code):
+
         self.name_input.configure(state="normal")
         self.name_input.delete(0, END)
         self.name_input.insert(0, name)
@@ -43,7 +48,7 @@ class MainLayout(BaseLayout):
 
 
         for match in matches:
-            self.search_.insert(match[0].value, lambda: self.handle_update_input(match[1].value, match[0].value))
+            self.search_.insert(match[0].value, self.handle_update_input, match[1].value, match[0].value)
 
 
     def handle_input_focus(self, event):
@@ -52,11 +57,8 @@ class MainLayout(BaseLayout):
         if event.keysym == "Escape":
             return
 
-
-        # print(self.search_.current_state)
         self.search_.switch_on()
         self.handle_autosearch()
-
 
 
     def _prepare_obj(self):

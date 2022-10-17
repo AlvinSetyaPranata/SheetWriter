@@ -246,6 +246,13 @@ class Reader(XlsSupport):
         self.fname = fname
         self.config = config
         self.xls_type = False
+        self._years = {}
+        self._names = []
+        self._codes = []
+        self.loaded = False
+
+        if not fname:
+            return
 
         if fname.endswith(".xls"):
             super().__init__(self.fname)
@@ -254,10 +261,7 @@ class Reader(XlsSupport):
             self._wb = load_workbook(self.fname)
             self._ws = self._wb.active
 
-        self._years = {}
-        self._names = []
-        self._codes = []
-
+        self.loaded = True
 
 
     @classmethod
@@ -359,7 +363,7 @@ class Reader(XlsSupport):
 
         row, col = self.convert_coord_xls(self.config["name_coords"], reverse=True)
 
-        self._names = self.pack_months(self._ws.iter_rows(min_col=col, max_col=col, min_row=row))
+        self._names = self.pack_months(self._ws.iter_rows(min_col=col+1, max_col=col+1, min_row=row+1))
 
         return self._names
 
@@ -378,7 +382,8 @@ class Reader(XlsSupport):
 
         row, col = self.convert_coord_xls(self.config["code_coords"], reverse=True)
 
-        self._codes = self.pack_months(self._ws.iter_rows(min_row=row, min_col=col, max_col=col))
+        self._codes = self.pack_months(self._ws.iter_rows(min_row=row+1, min_col=col+1, max_col=col+1))
         
+        # print(self._codes)
 
         return self._codes

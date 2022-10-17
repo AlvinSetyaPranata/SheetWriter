@@ -3,12 +3,13 @@ from . import *
 from tkinter.filedialog import askopenfilename
 
 class ConfigLayout(BaseLayout):
-    def __init__(self, parent):
+    def __init__(self, parent, onFileChange):
         super().__init__()
 
         self.parent = parent
         self.handler = Config(Config.resolve_parent_path(__file__, "default_config", parent_=1))
         self.current_filename = askopenfilename(filetypes=(("Excel 2003", ".xls"), ("Excel 2007", ".xlsx")))
+        self.file_change_handler = onFileChange
 
     def apply_configuration(self, event):
         self.handler.add_config(
@@ -26,6 +27,8 @@ class ConfigLayout(BaseLayout):
         self.fname_entry.delete(0, END)
         self.fname_entry.insert(0, self.current_filename)
         self.fname_entry.configure(state="readonly")
+
+        self.file_change_handler(self.current_filename)
 
     def conf_load(self):
         year = self.handler.get_config("year_coords")
