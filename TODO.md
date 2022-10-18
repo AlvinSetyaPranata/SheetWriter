@@ -8,5 +8,7 @@
     * fix coordinate in get_codes and get_names (SOLVED)
     * make file loader that can be re-load other file later (SOLVED)
     * make method that validate year in every keypress
-    * Integrate with UI (ONGOING)
-    * make method that update autosearch every time the file is reloaded
+    * Integrate with UI (SOLVED)
+    * make method that update autosearch every time the file is reloaded (SOLVED)
+    * make make month validation and value validation
+    * make pop method that show all warnings

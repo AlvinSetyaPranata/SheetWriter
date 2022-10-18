@@ -46,6 +46,11 @@ class MainLayout(BaseLayout):
             self.search_.switch_off()
             return
 
+        if len(matches) == 1:
+            self.search_.switch_off()
+            self.handle_update_input(matches[0][1].value, matches[0][0].value)
+            return
+
 
         for match in matches:
             self.search_.insert(match[0].value, self.handle_update_input, match[1].value, match[0].value)
@@ -61,6 +66,23 @@ class MainLayout(BaseLayout):
         self.handle_autosearch()
 
 
+    def accept_changes(self):
+        year_matches = self.autosearch.search_years(self.year_opt.get())
+
+
+        if not self.name_input.get():
+            self.alert("Nama barang tidak boleh kosong!")
+            return
+
+        if not year_matches:
+            self.alert("Tahun tidak ditemukan")
+            return
+
+        if not self.month_opt.get() in year_matches[self.year_opt.get()]:
+            self.alert("Bulan tidak ditemukan")
+            return
+
+
     def _prepare_obj(self):
         self.main_frame = Frame(self.parent)
 
@@ -73,6 +95,8 @@ class MainLayout(BaseLayout):
         self.code_input = Entry(self.code_group)
         self.code_input.bind("<KeyRelease>", self.handle_input_focus)
         self.code_input.bind("<FocusOut>", lambda x: self.search_.switch_off())
+        self.code_input.bind("<Return>", lambda x: self.date_opt.focus_force())
+
         self.search_ = Search(self.parent)
 
 
@@ -91,12 +115,15 @@ class MainLayout(BaseLayout):
 
         self.date_label = Label(self.date_group, text="Tanggal", pady=5)
         self.date_opt = Entry(self.date_group, width=5)
+        self.date_opt.bind("<Return>", lambda x: self.month_opt.focus_force())
 
         # Month Group
         self.month_group = Frame(self.datetime_group)
 
         self.month_label = Label(self.month_group, text="Bulan", pady=5)
         self.month_opt = Entry(self.month_group, width=5)
+        self.month_opt.bind("<Return>", lambda x: self.year_opt.focus_force())
+
 
         #Year Group
         self.year_group = Frame(self.datetime_group)
@@ -111,7 +138,8 @@ class MainLayout(BaseLayout):
         self.value_label = Label(self.value_group, text="Nilai")
         self.value_input = Entry(self.value_group)
     
-        self.action_btn = Button(self.container, text="Simpan Perubahan")
+        self.action_btn = Button(self.container, text="Simpan Perubahan", command=self.accept_changes)
+
 
     def render(self):
         self._prepare_obj()
