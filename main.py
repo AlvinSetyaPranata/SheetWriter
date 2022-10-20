@@ -13,7 +13,7 @@ class Main:
     def __init__(self):
         self.window = Tk()
         self.window.title("Sheetwriter - Lite")
-        self.window.geometry("500x500")
+        self.window.geometry("600x500")
         self.window.wm_resizable(False, False)
 
 
@@ -24,8 +24,8 @@ class Main:
 
 
         self.config_layout = config.ConfigLayout(self.tabs, self.update_file)
-        self.main_layout = main.MainLayout(self.tabs, Reader(self.config_layout.current_filename, self.current_config.get_config("all")))
         self.changes_layout = changes.ChangesLayout(self.tabs)
+        self.main_layout = main.MainLayout(self.tabs, Reader(self.config_layout.current_filename, self.current_config.get_config("all")), self.changes_layout.table.add_row)
 
         self.main_layout._prepare_obj()
         self.config_layout._prepare_obj()

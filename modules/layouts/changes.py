@@ -1,6 +1,8 @@
+from tkinter.filedialog import asksaveasfilename
 from . import *
 from modules.components.table import Table
 from PIL import Image, ImageTk
+from modules.utils.writer import Writer
 
 
 class ChangesLayout(BaseLayout):
@@ -11,6 +13,8 @@ class ChangesLayout(BaseLayout):
         self.main_frame = Frame(self.parent)
         self.row_id = []
         self.detached_items = set()
+
+        self.table = Table(self.main_frame, ("Kode Barang", "Nama Barang", "Bulan", "Tahun","Kuantitas"), onSelect=self.handle_select, mode="extended", onChange=self.check_table)
 
     def load_images(self):
         _undo_image = Image.open("assets/undo.png")
@@ -34,6 +38,8 @@ class ChangesLayout(BaseLayout):
 
         self.remove_btn.configure(state=DISABLED)
         self.undo_btn.configure(state=NORMAL)
+
+        self.check_table()
         
 
     def handle_undo(self, table):
@@ -42,6 +48,22 @@ class ChangesLayout(BaseLayout):
 
         self.detached_items.clear()
         self.undo_btn.configure(state=DISABLED)
+
+        self.check_table()
+
+    def check_table(self):
+        if not self.table._bodies:
+            self.export_btn.configure(state=DISABLED)
+            return
+
+        self.export_btn.configure(state=NORMAL)
+
+
+    def _export(self):
+        _ftarget = asksaveasfilename(defaultextension=".xlsx", filetypes=())
+
+        w  = Writer()
+
 
 
     def handle_select(self, table):
@@ -72,9 +94,8 @@ class ChangesLayout(BaseLayout):
         self.remove_btn = Button(self.command_sector, text="Hapus", state=DISABLED, image=self._delete_image, compound=LEFT)
         self.undo_btn = Button(self.command_sector, text="Undo", state=DISABLED, image=self._undo_image, compound=LEFT)
 
-        self.export_btn = Button(self.command_sector, text="Export", state=DISABLED, image=self._export_image, compound=LEFT)
+        self.export_btn = Button(self.command_sector, text="Export", state=DISABLED, image=self._export_image, compound=LEFT, commnad=self._export)
 
-        self.table = Table(self.main_frame, ("Kode Barang", "Nama Barang", "Tanggal", "Kuantitas"), onSelect=self.handle_select, mode="extended")
 
     def render(self):
         self._prepare_obj()

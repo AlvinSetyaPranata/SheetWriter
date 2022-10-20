@@ -1,10 +1,11 @@
 from modules.handler.autocomplete import AutoSearch
 from modules.components.search import Search
 from . import *
+from tkinter.messagebox import showerror
 
 
 class MainLayout(BaseLayout):
-    def __init__(self, parent, f_handler):
+    def __init__(self, parent, f_handler, onsave):
         """"
         Parent should Notebook object
         :f_handler 
@@ -17,6 +18,7 @@ class MainLayout(BaseLayout):
         self.date_value = StringVar()
         self.month_value = StringVar()
         self.year_value = StringVar()
+        self.onsave = onsave
 
         self.load_autosearch(f_handler)
 
@@ -26,6 +28,12 @@ class MainLayout(BaseLayout):
 
         self.autosearch = AutoSearch(f_handler)
 
+
+    def alert(self, type_, msg):
+        if type_ == "error":
+            showerror("Error", msg)
+        elif type_ == "info":
+            showerror("Info", msg)
 
 
     def handle_update_input(self, name, code):
@@ -67,20 +75,25 @@ class MainLayout(BaseLayout):
 
 
     def accept_changes(self):
-        year_matches = self.autosearch.search_years(self.year_opt.get())
-
 
         if not self.name_input.get():
-            self.alert("Nama barang tidak boleh kosong!")
+            self.alert("error", "Nama barang tidak boleh kosong!")
             return
 
-        if not year_matches:
-            self.alert("Tahun tidak ditemukan")
+        if not self.autosearch.search_years(self.year_opt.get()):
+            self.alert("error", "Tahun tidak ditemukan")
             return
 
-        if not self.month_opt.get() in year_matches[self.year_opt.get()]:
-            self.alert("Bulan tidak ditemukan")
+        if not self.autosearch.search_months(self.month_opt.get()):
+            self.alert("error", "Bulan tidak ditemukan")
             return
+
+        if not self.value_input.get().isnumeric():
+            self.alert("error", "Nilai harus berupa angka")
+            return
+
+        self.alert("info", "Perubahan Tersimpan!")
+        self.onsave((self.code_input.get(), self.name_input.get(), self.month_opt.get(), self.year_opt.get(), self.value_input.get()))
 
 
     def _prepare_obj(self):
@@ -95,7 +108,7 @@ class MainLayout(BaseLayout):
         self.code_input = Entry(self.code_group)
         self.code_input.bind("<KeyRelease>", self.handle_input_focus)
         self.code_input.bind("<FocusOut>", lambda x: self.search_.switch_off())
-        self.code_input.bind("<Return>", lambda x: self.date_opt.focus_force())
+        self.code_input.bind("<Return>", lambda x: self.month_opt.focus_force())
 
         self.search_ = Search(self.parent)
 
@@ -110,12 +123,6 @@ class MainLayout(BaseLayout):
         # Datetime Group
         self.datetime_group = Frame(self.container)
 
-        # date group
-        self.date_group = Frame(self.datetime_group)
-
-        self.date_label = Label(self.date_group, text="Tanggal", pady=5)
-        self.date_opt = Entry(self.date_group, width=5)
-        self.date_opt.bind("<Return>", lambda x: self.month_opt.focus_force())
 
         # Month Group
         self.month_group = Frame(self.datetime_group)
@@ -130,6 +137,7 @@ class MainLayout(BaseLayout):
 
         self.year_label = Label(self.year_group, text="Tahun", pady=5)
         self.year_opt = Entry(self.year_group, width=5)
+        self.year_opt.bind("<Return>", lambda x: self.value_input.focus_force())
 
 
         #Value Group
@@ -155,7 +163,6 @@ class MainLayout(BaseLayout):
         self.action_btn.grid(row=2, column=0, columnspan=2)
 
 
-        self.date_group.pack(side=LEFT, padx=12)
         self.month_group.pack(side=LEFT, padx=12)
         self.year_group.pack(side=LEFT, padx=12)
 
@@ -165,9 +172,6 @@ class MainLayout(BaseLayout):
 
         self.name_label.pack(anchor='w')
         self.name_input.pack(ipady=2)
-
-        self.date_label.pack()
-        self.date_opt.pack(ipady=2)
 
         self.month_label.pack()
         self.month_opt.pack()

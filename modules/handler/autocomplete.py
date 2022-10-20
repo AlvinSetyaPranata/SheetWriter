@@ -3,6 +3,8 @@ from json import load
 from modules.utils.reader import Reader
 from os.path import join, dirname
 
+MONTHS = ("JAN", "FEB", "MAR", "APR", "MEI", "JAN", "JUL", "AGS", "SEP", "OKT", "NOV", "DES")
+
 
 class AutoSearch:
     def __init__(self, reader_handler):
@@ -27,7 +29,8 @@ class AutoSearch:
 
         self.codes = self._handler.get_codes()
         self.names = self._handler.get_names()
-        self.years = self._handler.get_years()
+        self._handler.get_years()
+        self.years = self._handler.get_months()
         self.data_loaded = True
 
     def search_years(self, current_key):
@@ -44,6 +47,27 @@ class AutoSearch:
 
         return res
 
+
+    @classmethod
+    def convert_month(self, month_name):
+        return MONTHS[int(month_name) - 1]
+
+
+
+    def search_months(self, current_key):
+        if not current_key or self.data_loaded == False:
+            return []
+
+        res = []
+
+        # print(self.years)
+
+        for year in self.years:
+            months = [x.value for x in self.years[year]]
+            if self.convert_month(current_key) in months:
+                res.append(self.years[year])
+
+        return res
 
     def search_by_code(self, current_key):
         if not current_key or self.data_loaded == False:

@@ -263,6 +263,10 @@ class Reader(XlsSupport):
 
         self.loaded = True
 
+    @property
+    def get_copies(self):
+        return self._ws.get_rows()
+
 
     @classmethod
     def wrap_year(cls, value):

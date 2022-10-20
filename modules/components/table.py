@@ -2,7 +2,7 @@ from . import *
 
 
 class Table:
-    def __init__(self, parent, header_data, fill_parent=False, onSelect=None, mode="browse"):
+    def __init__(self, parent, header_data, fill_parent=False, onSelect=None, onChange=None, mode="browse"):
         """
         :header_data => contains all data in header
         """
@@ -24,7 +24,6 @@ class Table:
         self.table.configure(yscrollcommand=self.scroll_y.set, xscrollcommand=self.scroll_x.set)
 
         self.table.bind("<<TreeviewSelect>>", lambda event: onSelect(self.table))
-
 
         for col in self.table["columns"]:
             self.table.column(col, anchor=CENTER, width=118)
@@ -72,9 +71,11 @@ class Table:
             if len(row) > _header_length:
                 raise ValueError("Length of row out of header range!")
 
+
             elif len(row) < _header_length:
                 row = self.fill_null(row, _header_length)
 
+            self._bodies.append(row)
             self.table.insert('', END, values=row)
         
         if self._rendered:

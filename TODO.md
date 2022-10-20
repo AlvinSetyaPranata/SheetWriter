@@ -7,8 +7,11 @@
     * fix get_codes and get_names in xlsx type (SOLVED)
     * fix coordinate in get_codes and get_names (SOLVED)
     * make file loader that can be re-load other file later (SOLVED)
-    * make method that validate year in every keypress
+    * make method that validate year in every keypress (SOLVED)
     * Integrate with UI (SOLVED)
     * make method that update autosearch every time the file is reloaded (SOLVED)
-    * make make month validation and value validation
-    * make pop method that show all warnings
+    * make make month validation and value validation (SOLVED)
+    * make pop method that show all warnings (SOLVED)
+    * figure out how to write xls file  (SOLVED)
+    * figure out how to get all data within the treeview (SOLVED)
+    * create file exporter
