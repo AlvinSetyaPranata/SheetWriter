@@ -84,7 +84,7 @@ class MainLayout(BaseLayout):
             self.alert("error", "Tahun tidak ditemukan")
             return
 
-        if not self.autosearch.search_months(self.month_opt.get()):
+        if not self.autosearch.find_month_coord(self.year_opt.get(), self.month_opt.get()):
             self.alert("error", "Bulan tidak ditemukan")
             return
 
@@ -93,7 +93,7 @@ class MainLayout(BaseLayout):
             return
 
         self.alert("info", "Perubahan Tersimpan!")
-        self.onsave((self.code_input.get(), self.name_input.get(), self.month_opt.get(), self.year_opt.get(), self.value_input.get()))
+        self.onsave(self.autosearch, (str(self.code_input.get()), str(self.name_input.get()), str(self.month_opt.get()), str(self.year_opt.get()), str(self.value_input.get())))
 
 
     def _prepare_obj(self):

@@ -3,18 +3,23 @@ from . import *
 from modules.components.table import Table
 from PIL import Image, ImageTk
 from modules.utils.writer import Writer
+from modules.handler.autocomplete import AutoSearch
+from modules.utils.reader import XlsSupport
 
 
 class ChangesLayout(BaseLayout):
-    def __init__(self, parent):
+    def __init__(self, parent, get_src_func, f_handler):
         super().__init__()
 
         self.parent = parent
         self.main_frame = Frame(self.parent)
         self.row_id = []
         self.detached_items = set()
+        self.data_obj = []
+        self.src_file_func = get_src_func
+        self.f_handler = f_handler
 
-        self.table = Table(self.main_frame, ("Kode Barang", "Nama Barang", "Bulan", "Tahun","Kuantitas"), onSelect=self.handle_select, mode="extended", onChange=self.check_table)
+        self.table = Table(self.main_frame, ("Kode Barang", "Nama Barang", "Bulan", "Tahun", "Kuantitas"), onSelect=self.handle_select, mode="extended")
 
     def load_images(self):
         _undo_image = Image.open("assets/undo.png")
@@ -35,6 +40,8 @@ class ChangesLayout(BaseLayout):
         for item in items:
             table.detach(item)
             self.detached_items.add(item)
+            # print(table.item(item)["values"])
+
 
         self.remove_btn.configure(state=DISABLED)
         self.undo_btn.configure(state=NORMAL)
@@ -51,19 +58,48 @@ class ChangesLayout(BaseLayout):
 
         self.check_table()
 
+    def handle_add(self, autosearch, data):
+        self.table.add_row(data)
+
+        self.data_obj.append(
+            (autosearch.search_by_code(data[0]), autosearch.search_months(data[2]))
+        )
+
+        self.check_table()
+
+
     def check_table(self):
         if not self.table._bodies:
             self.export_btn.configure(state=DISABLED)
             return
 
+
         self.export_btn.configure(state=NORMAL)
 
 
     def _export(self):
-        _ftarget = asksaveasfilename(defaultextension=".xlsx", filetypes=())
+        _ftarget = asksaveasfilename(filetypes=(("Excel 2003 format", ".xls"), ("Excel 2007 format", ".xlsx")))
 
-        w  = Writer()
+        if not _ftarget:
+            return
 
+
+        w  = Writer(_ftarget, self.src_file_func())
+        search = AutoSearch(self.f_handler)
+
+        search.load_data()
+
+
+        for row in self.table.table.get_children():
+            code, _, month, year, value = self.table.table.item(row)["values"]
+
+
+            row_code, _ = XlsSupport.split_coord(search.find_code_obj(str(code))[0].coordinate)
+            _, col_month = XlsSupport.split_coord(search.find_month_coord(str(year), str(month))[0].coordinate)
+
+            w.modify("".join((col_month, row_code)), value)
+
+        w.save()
 
 
     def handle_select(self, table):
@@ -94,7 +130,7 @@ class ChangesLayout(BaseLayout):
         self.remove_btn = Button(self.command_sector, text="Hapus", state=DISABLED, image=self._delete_image, compound=LEFT)
         self.undo_btn = Button(self.command_sector, text="Undo", state=DISABLED, image=self._undo_image, compound=LEFT)
 
-        self.export_btn = Button(self.command_sector, text="Export", state=DISABLED, image=self._export_image, compound=LEFT, commnad=self._export)
+        self.export_btn = Button(self.command_sector, text="Export", state=DISABLED, image=self._export_image, compound=LEFT, command=self._export)
 
 
     def render(self):

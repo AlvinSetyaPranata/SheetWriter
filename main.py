@@ -24,8 +24,8 @@ class Main:
 
 
         self.config_layout = config.ConfigLayout(self.tabs, self.update_file)
-        self.changes_layout = changes.ChangesLayout(self.tabs)
-        self.main_layout = main.MainLayout(self.tabs, Reader(self.config_layout.current_filename, self.current_config.get_config("all")), self.changes_layout.table.add_row)
+        self.changes_layout = changes.ChangesLayout(self.tabs, self.config_layout.get_filename, Reader(self.config_layout.current_filename, self.current_config.get_config("all")))
+        self.main_layout = main.MainLayout(self.tabs, Reader(self.config_layout.current_filename, self.current_config.get_config("all")), self.changes_layout.handle_add)
 
         self.main_layout._prepare_obj()
         self.config_layout._prepare_obj()

@@ -1,40 +1,57 @@
 # from openpyxl.workbook import Workbook
 from os import listdir, remove
 from openpyxl import load_workbook
-from modules.utils.reader import ABREVIATIONS
+from modules.utils.reader import XlsSupport
 from os.path import (
     basename, join
 )
+from xlutils.copy import copy
+from xlrd import open_workbook_xls
+from openpyxl.styles import Alignment
+from xlwt import easyxf
 
 
 
-
-class Writer:
+class Writer(XlsSupport):
     def __init__(self, f_target, f_source):
         self.f_target = f_target
         self.f_source = f_source
+        self._xls_type = False
 
-        self._wb = self.load_file()
-        self._ws = self._wb.active
+        self._wb, self._ws = self.load_file()
+
 
 
     def load_file(self):
-        if self.f_source.endswith("xls"):
-            f_src = open(self.f_source, "rb")
-            f_target =  open(join("temp", basename(self.f_source)), "wb")
+        if basename(self.f_source).endswith(".xls"):
+            self._xls_type = True
 
-            f_target.write(f_src.read())
+            _wb = copy(open_workbook_xls(self.f_source, formatting_info=True))
 
-            f_src.close()
-            f_target.close()
+            return _wb, _wb.get_sheet(0)
 
-            return load_workbook(join("temp", basename(self.f_source)))
 
-        return load_workbook(self.f_source)
+        _wb = load_workbook(self.f_source)
+
+        return _wb, _wb.active
 
 
     def modify(self, coord, value):
+        """"
+        :coord coordinate of the cell that want to be modified
+
+        :value the value for the cell that want to be modified
+        """
+
+
+        if self._xls_type:
+            row, col = self.convert_coord_xls(coord, reverse=True)
+            self._ws.write(row, col, value, easyxf("align: horiz center"))
+
+            return
+
         self._ws[coord] = value
+        self._ws[coord].alignment = Alignment(horizontal="center", vertical="center")
 
 
     @classmethod
@@ -45,14 +62,13 @@ class Writer:
 
     def save(self):
         self._wb.save(self.f_target)
-        self._wb.close()
         self.clean_temp()
 
 
-    def __del__(self):
-        """
-        Clean all temporary file
-        """
-        self.clean_temp()
+    # def __del__(self):
+    #     """
+    #     Clean all temporary file
+    #     """
+    #     self.clean_temp()
 
 

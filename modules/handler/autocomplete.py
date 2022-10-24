@@ -49,8 +49,9 @@ class AutoSearch:
 
 
     @classmethod
-    def convert_month(self, month_name):
-        return MONTHS[int(month_name) - 1]
+    def convert_month(self, index):
+
+        return MONTHS[int(index) - 1]
 
 
 
@@ -87,4 +88,20 @@ class AutoSearch:
 
         # return [word.value for word in self.codes if not ex_.search(word) is None or not ex_.search(word) == ""]
 
+    def find_month_coord(self, year, month):
+        if not year in self.years:
+            return []
 
+
+        month = self.convert_month(month)
+
+
+        return [m for m in self.years[year] if m.value == month]
+
+
+
+    def find_code_obj(self, code):
+        # for x in self.codes:
+        #     print(x.value, code)
+
+        return [c for c in self.codes if str(c.value) == str(code)]

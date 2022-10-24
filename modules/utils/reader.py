@@ -35,6 +35,9 @@ class XlsCell:
 
 class XlsSupport:
     def __init__(self, fname):
+        if not fname:
+            return
+            
         self._wb = open_workbook_xls(fname)
         self._ws = self._wb[0]
         self.xls_type = True
@@ -59,15 +62,15 @@ class XlsSupport:
         cells = self._ws.col_slice(col, start_rowx=start_row)
         
         for cell in cells:
-            # print(cell.value, type(cell.value),)
+            # print(cell.value, type(cell.value))
             if type(cell.value) is float:
                 res.append(
-                XlsCell(start_row, str(int(cell.value)))
+                XlsCell(self.convert_coord_xls_reverse((start_row, col))[0], str(int(cell.value)))
                 )
 
             else:
                 res.append(
-                XlsCell(self.convert_coord_xls_reverse(((start_row, col))), str(cell.value))
+                XlsCell(self.convert_coord_xls_reverse((start_row, col))[0], str(cell.value))
                 )
 
             start_row += 1
@@ -112,8 +115,8 @@ class XlsSupport:
         return "".join(coord)
 
 
-    @classmethod
-    def split_coord(cls, coord, change_row="", change_col=""):
+    @staticmethod
+    def split_coord(coord, change_row="", change_col=""):
         """
         return e.g "B12" => row="12" cols="B"
         """
@@ -388,6 +391,5 @@ class Reader(XlsSupport):
 
         self._codes = self.pack_months(self._ws.iter_rows(min_row=row+1, min_col=col+1, max_col=col+1))
         
-        # print(self._codes)
 
         return self._codes

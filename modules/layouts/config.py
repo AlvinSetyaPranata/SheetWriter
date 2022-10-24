@@ -30,6 +30,12 @@ class ConfigLayout(BaseLayout):
 
         self.file_change_handler(self.current_filename)
 
+
+    def get_filename(self):
+        return self.current_filename
+
+
+
     def conf_load(self):
         year = self.handler.get_config("year_coords")
         product = self.handler.get_config("name_coords")
@@ -39,7 +45,6 @@ class ConfigLayout(BaseLayout):
         self.year_conf_input.insert(0, year)
         self.product_conf_input.insert(0, product)
         self.code_conf_input.insert(0, code)
-
 
 
     def _prepare_obj(self):

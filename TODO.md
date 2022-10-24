@@ -14,4 +14,7 @@
     * make pop method that show all warnings (SOLVED)
     * figure out how to write xls file  (SOLVED)
     * figure out how to get all data within the treeview (SOLVED)
-    * create file exporter
+    * create file exporter (SOLVED)
+    * figure out how to fix badzip file (SOLVED)
+    * figure out how to keep color on merged cell in xlsx types (SOLVED)
+    * final test

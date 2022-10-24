@@ -29,7 +29,6 @@ class Search:
 
 
     def switch_off(self):
-        # print(self.current_state)
         if self.current_state == 0:
             return
 
@@ -43,7 +42,7 @@ class Search:
 
         self.current_state = 1
         self.render()
-        self.main_frame.place(x=92, y=232)
+        self.main_frame.place(x=140, y=232)
 
 
     def render(self):

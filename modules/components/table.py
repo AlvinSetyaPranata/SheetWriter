@@ -2,7 +2,7 @@ from . import *
 
 
 class Table:
-    def __init__(self, parent, header_data, fill_parent=False, onSelect=None, onChange=None, mode="browse"):
+    def __init__(self, parent, header_data, fill_parent=False, onSelect=None, mode="browse"):
         """
         :header_data => contains all data in header
         """
@@ -10,6 +10,7 @@ class Table:
         self.header_data = header_data
         self.fill_parent = fill_parent
         self.parent = parent
+        # self.handle_change = onChange
         
         self._bodies = []
         self._headers = []
@@ -77,7 +78,4 @@ class Table:
 
             self._bodies.append(row)
             self.table.insert('', END, values=row)
-        
-        if self._rendered:
-            self.render()
-    
+
