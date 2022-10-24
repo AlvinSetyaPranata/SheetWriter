@@ -1,4 +1,5 @@
 from tkinter.filedialog import asksaveasfilename
+from tkinter.messagebox import showinfo
 from . import *
 from modules.components.table import Table
 from PIL import Image, ImageTk
@@ -101,6 +102,15 @@ class ChangesLayout(BaseLayout):
 
         w.save()
 
+        # Cleaning the table
+
+        for row in self.table.table.get_children():
+            self.table.table.delete(row)
+
+        for item in self.detached_items:
+            self.table.table.delete(item)
+
+        showinfo("Info", f"File sudah terekspor di {_ftarget}!")
 
     def handle_select(self, table):
         items = table.selection()

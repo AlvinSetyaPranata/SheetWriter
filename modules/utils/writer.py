@@ -46,7 +46,7 @@ class Writer(XlsSupport):
 
         if self._xls_type:
             row, col = self.convert_coord_xls(coord, reverse=True)
-            self._ws.write(row, col, value, easyxf("align: horiz center"))
+            self._ws.write(row, col, value, easyxf("align: horiz center, vert center"))
 
             return
 
@@ -54,21 +54,7 @@ class Writer(XlsSupport):
         self._ws[coord].alignment = Alignment(horizontal="center", vertical="center")
 
 
-    @classmethod
-    def clean_temp(cls):
-        for file in listdir("temp"):
-            remove(join("temp", file))
-
-
     def save(self):
         self._wb.save(self.f_target)
-        self.clean_temp()
-
-
-    # def __del__(self):
-    #     """
-    #     Clean all temporary file
-    #     """
-    #     self.clean_temp()
 
 

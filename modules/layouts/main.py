@@ -94,7 +94,18 @@ class MainLayout(BaseLayout):
 
         self.alert("info", "Perubahan Tersimpan!")
         self.onsave(self.autosearch, (str(self.code_input.get()), str(self.name_input.get()), str(self.month_opt.get()), str(self.year_opt.get()), str(self.value_input.get())))
+        self._clear_widget()
 
+
+    def _clear_widget(self):
+        self.code_input.delete(0, END)
+        self.month_opt.delete(0, END)
+        self.year_opt.delete(0, END)
+        self.value_input.delete(0, END)
+
+        self.name_input.configure(state=NORMAL)
+        self.name_input.delete(0, END)
+        self.name_input.configure(state="readonly")
 
     def _prepare_obj(self):
         self.main_frame = Frame(self.parent)
@@ -145,6 +156,7 @@ class MainLayout(BaseLayout):
 
         self.value_label = Label(self.value_group, text="Nilai")
         self.value_input = Entry(self.value_group)
+        self.value_input.bind("<Return>", lambda x: self.accept_changes())
     
         self.action_btn = Button(self.container, text="Simpan Perubahan", command=self.accept_changes)
 
