@@ -17,4 +17,5 @@
     * create file exporter (SOLVED)
     * figure out how to fix badzip file (SOLVED)
     * figure out how to keep color on merged cell in xlsx types (SOLVED)
+    * push to github
     * final test
