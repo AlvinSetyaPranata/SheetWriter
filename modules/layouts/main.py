@@ -1,7 +1,7 @@
 from modules.handler.autocomplete import AutoSearch
 from modules.components.search import Search
 from . import *
-from tkinter.messagebox import showerror
+from tkinter.messagebox import showerror, showinfo
 
 
 class MainLayout(BaseLayout):
@@ -33,7 +33,7 @@ class MainLayout(BaseLayout):
         if type_ == "error":
             showerror("Error", msg)
         elif type_ == "info":
-            showerror("Info", msg)
+            showinfo("Info", msg)
 
 
     def handle_update_input(self, name, code):
