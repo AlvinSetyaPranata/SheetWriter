@@ -36,19 +36,22 @@ class MainLayout(BaseLayout):
             showinfo("Info", msg)
 
 
-    def handle_update_input(self, name, code):
-
+    def handle_update_input(self, code):
         self.name_input.configure(state="normal")
         self.name_input.delete(0, END)
-        self.name_input.insert(0, name)
+        self.name_input.insert(0, self.find_matches()[0][1].value)
         self.name_input.configure(state="readonly")
 
         self.code_input.delete(0, END)
         self.code_input.insert(0, code)
 
 
+    def find_matches(self):
+        return self.autosearch.search_by_code(self.code_input.get())
+
+
     def handle_autosearch(self):
-        matches = self.autosearch.search_by_code(self.code_input.get())
+        matches = self.find_matches()
 
         if not matches:
             self.search_.switch_off()
@@ -61,7 +64,7 @@ class MainLayout(BaseLayout):
 
 
         for match in matches:
-            self.search_.insert(match[0].value, self.handle_update_input, match[1].value, match[0].value)
+            self.search_.insert(match[0].value)
 
 
     def handle_input_focus(self, event):
@@ -121,7 +124,7 @@ class MainLayout(BaseLayout):
         self.code_input.bind("<FocusOut>", lambda x: self.search_.switch_off())
         self.code_input.bind("<Return>", lambda x: self.month_opt.focus_force())
 
-        self.search_ = Search(self.parent)
+        self.search_ = Search(self.parent, self.handle_update_input)
 
 
         # NameField Group

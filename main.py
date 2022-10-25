@@ -4,7 +4,6 @@ from modules.layouts import (
 from tkinter import BOTH, Tk
 from tkinter.ttk import Notebook
 from modules.utils.reader import Reader
-from tkinter import filedialog
 from modules.handler.config import Config
 from os.path import (join, dirname)
 
@@ -34,6 +33,11 @@ class Main:
 
     def update_file(self, fname_path):
         self.main_layout.load_autosearch(Reader(fname_path, self.current_config.get_config("all")))
+
+
+    def report_callback_exception(self, exec, val, tb):
+        self.alert("error", val)
+        self.window.destroy()
 
 
     def run(self):

@@ -10,12 +10,14 @@
     * make method that validate year in every keypress (SOLVED)
     * Integrate with UI (SOLVED)
     * make method that update autosearch every time the file is reloaded (SOLVED)
-    * make make month validation and value validation (SOLVED)
+    * make month validation and value validation (SOLVED)
     * make pop method that show all warnings (SOLVED)
     * figure out how to write xls file  (SOLVED)
     * figure out how to get all data within the treeview (SOLVED)
     * create file exporter (SOLVED)
     * figure out how to fix badzip file (SOLVED)
     * figure out how to keep color on merged cell in xlsx types (SOLVED)
+    * push to github (SOLVED)
+    * client review and testing
+    * launching
     * push to github
-    * final test
