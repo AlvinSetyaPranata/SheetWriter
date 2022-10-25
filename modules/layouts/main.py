@@ -39,19 +39,16 @@ class MainLayout(BaseLayout):
     def handle_update_input(self, code):
         self.name_input.configure(state="normal")
         self.name_input.delete(0, END)
-        self.name_input.insert(0, self.find_matches()[0][1].value)
+        self.name_input.insert(0, self.autosearch.search_by_code(code)[0][1].value)
         self.name_input.configure(state="readonly")
 
         self.code_input.delete(0, END)
         self.code_input.insert(0, code)
 
 
-    def find_matches(self):
-        return self.autosearch.search_by_code(self.code_input.get())
-
 
     def handle_autosearch(self):
-        matches = self.find_matches()
+        matches = self.autosearch.search_by_code(self.code_input.get())
 
         if not matches:
             self.search_.switch_off()
@@ -59,11 +56,11 @@ class MainLayout(BaseLayout):
 
         if len(matches) == 1:
             self.search_.switch_off()
-            self.handle_update_input(matches[0][1].value, matches[0][0].value)
+            self.handle_update_input(matches[0][0].value)
             return
 
 
-        for match in matches:
+        for match in tuple(reversed(matches)):
             self.search_.insert(match[0].value)
 
 

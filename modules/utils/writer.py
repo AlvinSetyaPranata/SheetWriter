@@ -3,12 +3,12 @@ from os import listdir, remove
 from openpyxl import load_workbook
 from modules.utils.reader import XlsSupport
 from os.path import (
-    basename, join
+    basename
 )
 from xlutils.copy import copy
 from xlrd import open_workbook_xls
-from openpyxl.styles import Alignment
-from xlwt import easyxf
+# from openpyxl.styles import Alignment
+# from xlwt import easyxf
 
 
 
@@ -41,17 +41,22 @@ class Writer(XlsSupport):
         :coord coordinate of the cell that want to be modified
 
         :value the value for the cell that want to be modified
+        
         """
+
+
+        # print(coord, value)
 
 
         if self._xls_type:
             row, col = self.convert_coord_xls(coord, reverse=True)
-            self._ws.write(row, col, value, easyxf("align: horiz center, vert center"))
+            self._ws.write(row+1, col, value)
+            # easyxf("align: horiz center, vert center")
 
             return
 
+        # self._ws[coord].alignment = Alignment(horizontal="center", vertical="center")
         self._ws[coord] = value
-        self._ws[coord].alignment = Alignment(horizontal="center", vertical="center")
 
 
     def save(self):
