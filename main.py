@@ -6,6 +6,8 @@ from tkinter.ttk import Notebook
 from modules.utils.reader import Reader
 from modules.handler.config import Config
 from os.path import (join, dirname)
+from modules.utils.backuper import Backuper, Loader
+from tkinter.messagebox import askyesno
 
 
 class Main:
@@ -15,16 +17,27 @@ class Main:
         self.window.geometry("600x500")
         self.window.wm_resizable(False, False)
 
+        self.window.wm_protocol("WM_DELETE_WINDOW", self.before_close)
+
 
         # define Tabs
         self.tabs = Notebook(self.window)
 
+        # Loader
+
         self.current_config = Config(join(dirname(__file__), "modules", "default_config"))
-
-
         self.config_layout = config.ConfigLayout(self.tabs, self.update_file)
-        self.changes_layout = changes.ChangesLayout(self.tabs, self.config_layout.get_filename, Reader(self.config_layout.current_filename, self.current_config.get_config("all")))
-        self.main_layout = main.MainLayout(self.tabs, Reader(self.config_layout.current_filename, self.current_config.get_config("all")), self.changes_layout.handle_add)
+
+        # backuper
+        self.backuper = Backuper(5)
+        self.loader = Loader()
+
+        # reader and other layouts
+
+        _reader = Reader(self.config_layout.current_filename, self.current_config.get_config("all"))
+
+        self.changes_layout = changes.ChangesLayout(self.tabs, self.config_layout.get_filename, _reader, self.loader)
+        self.main_layout = main.MainLayout(self.tabs, _reader, self.changes_layout.handle_add, self.backuper)
 
         self.main_layout._prepare_obj()
         self.config_layout._prepare_obj()
@@ -39,6 +52,13 @@ class Main:
         self.alert("error", val)
         self.window.destroy()
 
+
+    def before_close(self):
+        if askyesno("Warning", "Apakah anda ingin menghapus file backup?"):
+            self.backuper.close()
+
+        self.window.destroy()
+            
 
     def run(self):
         self.tabs.pack(fill=BOTH, expand=True)

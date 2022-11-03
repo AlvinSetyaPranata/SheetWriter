@@ -1,5 +1,5 @@
-from tkinter.filedialog import asksaveasfilename
-from tkinter.messagebox import showinfo
+from tkinter.filedialog import asksaveasfilename, askopenfilename
+from tkinter.messagebox import showinfo, showerror, showwarning
 from . import *
 from modules.components.table import Table
 from PIL import Image, ImageTk
@@ -9,7 +9,7 @@ from modules.utils.reader import XlsSupport
 
 
 class ChangesLayout(BaseLayout):
-    def __init__(self, parent, get_src_func, f_handler):
+    def __init__(self, parent, get_src_func, f_handler, loader):
         super().__init__()
 
         self.parent = parent
@@ -19,6 +19,7 @@ class ChangesLayout(BaseLayout):
         self.data_obj = []
         self.src_file_func = get_src_func
         self.f_handler = f_handler
+        self.loader = loader
 
         self.table = Table(self.main_frame, ("Kode Barang", "Nama Barang", "Bulan", "Tahun", "Kuantitas"), onSelect=self.handle_select, mode="extended")
 
@@ -41,13 +42,23 @@ class ChangesLayout(BaseLayout):
         for item in items:
             table.detach(item)
             self.detached_items.add(item)
-            # print(table.item(item)["values"])
 
 
         self.remove_btn.configure(state=DISABLED)
         self.undo_btn.configure(state=NORMAL)
 
         self.check_table()
+        
+
+    def load_(self):
+        file = askopenfilename()
+
+        if not file:
+            return
+
+        # for row in self.loader.load(file):
+        
+        self.table.add_row(self.loader.load(file))
         
 
     def handle_undo(self, table):
@@ -77,6 +88,14 @@ class ChangesLayout(BaseLayout):
 
         self.export_btn.configure(state=NORMAL)
 
+    def alert(self, type_, msg):
+        if type_ == "error":
+            showerror("Error", msg)
+        elif type_ == "info":
+            showinfo("Info", msg)
+        elif type_ == "warning":
+            showwarning("Warning", msg)
+
 
     def _export(self):
         _ftarget = asksaveasfilename(filetypes=(("Excel 2003 format", ".xls"), ("Excel 2007 format", ".xlsx")))
@@ -86,14 +105,13 @@ class ChangesLayout(BaseLayout):
 
 
         w  = Writer(_ftarget, self.src_file_func())
-        search = AutoSearch(self.f_handler)
+        search = AutoSearch(self.f_handler, self.alert)
 
         search.load_data()
 
 
         for row in self.table.table.get_children():
             code, _, month, year, value = self.table.table.item(row)["values"]
-
 
             row_code, _ = XlsSupport.split_coord(search.find_code_obj(str(code))[0].coordinate)
             _, col_month = XlsSupport.split_coord(search.find_month_coord(str(year), str(month))[0].coordinate)
@@ -141,6 +159,8 @@ class ChangesLayout(BaseLayout):
         self.undo_btn = Button(self.command_sector, text="Undo", state=DISABLED, image=self._undo_image, compound=LEFT)
 
         self.export_btn = Button(self.command_sector, text="Export", state=DISABLED, image=self._export_image, compound=LEFT, command=self._export)
+
+        self.load_btn = Button(self.command_sector, text="Load Backup", command=self.load_)
 
 
     def render(self):

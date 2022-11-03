@@ -1,4 +1,4 @@
-# TODOS
+# V2.0.1
     * Fix get_value_xls function  (SOLVED)
     * make file dialog (SOLVED)
     * fix the input if one of the options is selected and the user press backspace (SOLVED)
@@ -18,6 +18,12 @@
     * figure out how to fix badzip file (SOLVED)
     * figure out how to keep color on merged cell in xlsx types (SOLVED)
     * push to github (SOLVED)
-    * client review and testing
-    * launching
-    * push to github
+    * client review and testing (FINISHED)
+    * launching (FINISHED)
+    * push to github (FINISHED)
+
+# V2.0.2
+    * Fix Bug on new file (SOLVED)
+    * Make Backuper
+    * Make loader from csv
+    * Name the backuper file with timestamp and hash with md5

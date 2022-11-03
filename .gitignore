@@ -2,4 +2,5 @@
 test.py
 *.xlsx
 *.xls
+*.csv
 token.txt

@@ -1,6 +1,7 @@
 from modules.handler.config import Config
 from . import *
 from tkinter.filedialog import askopenfilename
+from tkinter.messagebox import showinfo
 
 class ConfigLayout(BaseLayout):
     def __init__(self, parent, onFileChange):
@@ -11,14 +12,21 @@ class ConfigLayout(BaseLayout):
         self.current_filename = askopenfilename(filetypes=(("Excel 2003", ".xls"), ("Excel 2007", ".xlsx")))
         self.file_change_handler = onFileChange
 
-    def apply_configuration(self, event):
+
+    def get_year_conf(self):        
+        return [group for group in self.year_conf_input.get().split(" ")]
+
+
+    def apply_configuration(self):
         self.handler.add_config(
-            {
-                "year_coords" : self.year_conf_input.get(),
+            **{
+                "year_coords" : self.get_year_conf(),
                 "name_coords" : self.product_conf_input.get(),
                 "code_coords" : self.code_conf_input.get()
             }
         )
+        showinfo("Info", "Konfigurasi tersimpan!")
+
 
     def file_load(self):
         self.current_filename = askopenfilename(filetypes=(("Excel 2003", ".xls"), ("Excel 2007", ".xlsx")))
@@ -33,7 +41,6 @@ class ConfigLayout(BaseLayout):
 
     def get_filename(self):
         return self.current_filename
-
 
 
     def conf_load(self):
@@ -74,7 +81,7 @@ class ConfigLayout(BaseLayout):
         self.code_conf_label = Label(self.code_conf_group, text="Cell kode pada Excel")
         self.code_conf_input = Entry(self.code_conf_group)
 
-        self.apply_btn = Button(self.cell_configuration, text="Simpan perubahan")
+        self.apply_btn = Button(self.cell_configuration, text="Simpan perubahan", command=self.apply_configuration)
 
 
     def render(self):

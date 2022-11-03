@@ -1,11 +1,12 @@
 from modules.handler.autocomplete import AutoSearch
 from modules.components.search import Search
 from . import *
-from tkinter.messagebox import showerror, showinfo
+from tkinter.messagebox import showerror, showinfo, showwarning
+
 
 
 class MainLayout(BaseLayout):
-    def __init__(self, parent, f_handler, onsave):
+    def __init__(self, parent, f_handler, onsave, backuper):
         """"
         Parent should Notebook object
         :f_handler 
@@ -14,7 +15,7 @@ class MainLayout(BaseLayout):
 
         self.parent = parent
         self.autosearch = None
-        
+        self.backuper = backuper
         self.date_value = StringVar()
         self.month_value = StringVar()
         self.year_value = StringVar()
@@ -26,7 +27,7 @@ class MainLayout(BaseLayout):
         if not f_handler:
             return
 
-        self.autosearch = AutoSearch(f_handler)
+        self.autosearch = AutoSearch(f_handler, self.alert)
 
 
     def alert(self, type_, msg):
@@ -34,17 +35,21 @@ class MainLayout(BaseLayout):
             showerror("Error", msg)
         elif type_ == "info":
             showinfo("Info", msg)
+        elif type_ == "warning":
+            showwarning("Warning", msg)
 
 
-    def handle_update_input(self, code):
+    def handle_update_input(self, code, delete=False):
+        if delete:
+            self.name_input.configure(state="normal")
+            self.name_input.delete(0, END)
+            self.name_input.configure(state="readonly")
+            return
+
         self.name_input.configure(state="normal")
         self.name_input.delete(0, END)
         self.name_input.insert(0, self.autosearch.search_by_code(code)[0][1].value)
         self.name_input.configure(state="readonly")
-
-        self.code_input.delete(0, END)
-        self.code_input.insert(0, code)
-
 
 
     def handle_autosearch(self):
@@ -52,6 +57,7 @@ class MainLayout(BaseLayout):
 
         if not matches:
             self.search_.switch_off()
+            self.handle_update_input("", delete=True)
             return
 
         if len(matches) == 1:
@@ -70,8 +76,22 @@ class MainLayout(BaseLayout):
         if event.keysym == "Escape":
             return
 
+        self.validate_length(event, 6)
+
+        # elif event.keysym == "Up" or event.keysym == "Down":
+        #     self.search_.set_focus()
+
         self.search_.switch_on()
         self.handle_autosearch()
+
+
+    def validate_length(self, event, max_length, keyword_exc="BackSpace"):
+        _widget = event.widget
+        if len(_widget.get()) > max_length and event.keysym != keyword_exc:
+            _str = _widget.get()[:max_length]
+            _widget.delete(0, END)
+            _widget.insert(0, _str)
+
 
 
     def accept_changes(self):
@@ -92,10 +112,13 @@ class MainLayout(BaseLayout):
             self.alert("error", "Nilai harus berupa angka")
             return
 
-        self.alert("info", "Perubahan Tersimpan!")
-        self.onsave(self.autosearch, (str(self.code_input.get()), str(self.name_input.get()), str(self.month_opt.get()), str(self.year_opt.get()), str(self.value_input.get())))
-        self._clear_widget()
+        _data = (str(self.code_input.get()), str(self.name_input.get()), str(self.month_opt.get()), str(self.year_opt.get()), str(self.value_input.get()))
 
+        self.alert("info", "Perubahan Tersimpan!")
+        self.onsave(self.autosearch, _data)
+        self._clear_widget()
+        self.code_input.focus_force()
+        self.backuper.listen(_data)
 
     def _clear_widget(self):
         self.code_input.delete(0, END)
@@ -141,6 +164,7 @@ class MainLayout(BaseLayout):
         self.month_label = Label(self.month_group, text="Bulan", pady=5)
         self.month_opt = Entry(self.month_group, width=5)
         self.month_opt.bind("<Return>", lambda x: self.year_opt.focus_force())
+        self.month_opt.bind("<KeyRelease>", lambda x: self.validate_length(x, 2))
 
 
         #Year Group
@@ -149,6 +173,7 @@ class MainLayout(BaseLayout):
         self.year_label = Label(self.year_group, text="Tahun", pady=5)
         self.year_opt = Entry(self.year_group, width=5)
         self.year_opt.bind("<Return>", lambda x: self.value_input.focus_force())
+        self.year_opt.bind("<KeyRelease>", lambda x: self.validate_length(x, 4))
 
 
         #Value Group

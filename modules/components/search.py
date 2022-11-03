@@ -9,6 +9,7 @@ class Search:
         self._rendered = False
         self.current_state = 0      # 0 represent hidden and 1 represent rendered
         self.callback = callback
+        # self.onSelect = onSelect
 
         # print(parent.winfo_y())
 
@@ -32,8 +33,24 @@ class Search:
         self.y_scroll = Scrollbar(self.main_frame, orient=VERTICAL, command=self.container.yview)
 
         self.container.bind("<<ListboxSelect>>", lambda x: self.onChange())
+        # self.container.bind("<KP_Down>", lambda x: self.handle_select())
+        # self.container.bind("<KP_Up>", lambda x: self.handle_select())
 
         self.container.config(yscrollcommand=self.y_scroll.set)
+
+
+    # def handle_select(self):
+    #     self.container.see(self.index)
+    #     self.container.itemconfigure(0, background="white", foreground="black")
+
+    #     self.container.itemconfigure(0, background="blue", foreground="white")
+
+
+    # def set_focus(self):
+    #     if self.current_state == 1:
+    #         return
+
+    #     self.container.focus_force()
 
 
     def switch_off(self):

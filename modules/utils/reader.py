@@ -299,8 +299,11 @@ class Reader(XlsSupport):
 
         if self.xls_type:
             for coord in self.config["year_coords"]:        
+                try:
+                    months.append(self.get_cell_from_ranges([self.convert_coord_ranges_xls(self.split_coord_ranges(coord, change_row="8"))])[0])
 
-                months.append(self.get_cell_from_ranges([self.convert_coord_ranges_xls(self.split_coord_ranges(coord, change_row="8"))])[0])
+                except IndexError:
+                    return "tidak bisa memuat data dikarenakan cell dalam file tidak sama dengan konfigurasi, harap ubah konfigurasi cell bulan ke file tersebut!"
 
             i = 0
 
@@ -345,11 +348,15 @@ class Reader(XlsSupport):
 
 
         for coord in self.config["year_coords"]:
-            row, col_start, _, col_end = self.convert_coord_xls(coord)
+            try:
+                row, col_start, _, col_end = self.convert_coord_xls(coord)
 
-            _year = tuple(self._ws.iter_cols(min_col=col_start+1, max_col=col_end+1, min_row=row+1, max_row=row+1))[0][0].value
+                _year = tuple(self._ws.iter_cols(min_col=col_start+1, max_col=col_end+1, min_row=row+1, max_row=row+1))[0][0].value
 
-            self._years[self.wrap_year(_year)] = []
+                self._years[self.wrap_year(_year)] = []
+
+            except:
+                return "tidak bisa memuat data dikarenakan cell dalam file tidak sama dengan konfigurasi, harap ubah konfigurasi cell bulan ke file tersebut!"
 
 
         return self._years

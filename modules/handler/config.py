@@ -18,6 +18,7 @@ class Config:
             self.data[key] = value
 
         json.dump(conf, open(self.f_name, "w"))
+        self.data = json.load(open(self.f_name, "r"))
 
 
     def get_config(self, key):

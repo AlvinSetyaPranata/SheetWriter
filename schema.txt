@@ -16,3 +16,10 @@ changes_layout = {
 data that passed in = {
     [[data], ]
 }
+
+DEFAULT FORMAT:
+    E7:M7 N7:Y7 Z7:AH7
+
+
+NEW FORMAT:
+    E8:H8, I8:T8, U8:AF8

@@ -1,13 +1,10 @@
 import re
-from json import load
-from modules.utils.reader import Reader
-from os.path import join, dirname
 
 MONTHS = ("JAN", "FEB", "MAR", "APR", "MEI", "JAN", "JUL", "AGS", "SEP", "OKT", "NOV", "DES")
 
 
 class AutoSearch:
-    def __init__(self, reader_handler):
+    def __init__(self, reader_handler, onAlert):
         """
         :path_to_file should be a file path that represent what is going to search
         :config_path is the path of the configuration file
@@ -18,7 +15,7 @@ class AutoSearch:
         self.codes = []
         self.names = []
         self.years = {}
-
+        self.onAlert = onAlert
 
         self.load_data()
 
@@ -31,6 +28,18 @@ class AutoSearch:
         self.names = self._handler.get_names()
         self._handler.get_years()
         self.years = self._handler.get_months()
+
+
+        if len(self.years) < 3:
+            self.onAlert("warning", "tidak bisa memuat data dikarenakan cell dalam file tidak sama dengan konfigurasi, harap ubah konfigurasi cell bulan ke file tersebut!")
+            return
+
+
+        if type(self.years) is str:
+            # self.years contain a message from the reader
+            self.onAlert("warning", self.years)
+            return
+
         self.data_loaded = True
 
     def search_years(self, current_key):
@@ -42,8 +51,13 @@ class AutoSearch:
         ex_ = re.compile(f"{current_key}")
 
         for year in self.years:
-            if not ex_.search(year) is None:
-                res.append((year, self.years[year]))
+            try:
+                if not ex_.search(year) is None:
+                    res.append((year, self.years[year]))
+
+            except:
+                self.onAlert("warning", "tidak bisa memuat data dikarenakan cell dalam file tidak sama dengan konfigurasi, harap ubah konfigurasi cell bulan ke file tersebut!")
+                return
 
         return res
 
@@ -80,7 +94,6 @@ class AutoSearch:
 
 
         for i in range(len(self.codes)):
-            # res.append(word)
             if ex_.search(str(self.codes[i].value)):
                 res.append((self.codes[i], self.names[i]))
 
@@ -94,14 +107,15 @@ class AutoSearch:
 
 
         month = self.convert_month(month)
+        ex_ = re.compile(r"\w*" + month)
 
 
-        return [m for m in self.years[year] if m.value == month]
+        return [m for m in self.years[year] if ex_.search(m.value)]
 
 
 
     def find_code_obj(self, code):
-        # for x in self.codes:
-        #     print(x.value, code)
+        
+        ex_ = re.compile(code)
 
-        return [c for c in self.codes if str(c.value) == str(code)]
+        return [c for c in self.codes if ex_.search(str(c.value))]
