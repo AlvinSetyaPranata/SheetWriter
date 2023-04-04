@@ -56,16 +56,20 @@ class AutoSearch:
                     res.append((year, self.years[year]))
 
             except:
-                self.onAlert("warning", "tidak bisa memuat data dikarenakan cell dalam file tidak sama dengan konfigurasi, harap ubah konfigurasi cell bulan ke file tersebut!")
+                self.onAlert("Warning", "tidak bisa memuat data dikarenakan cell dalam file tidak sama dengan konfigurasi, harap ubah konfigurasi cell bulan ke file tersebut!")
                 return
 
         return res
 
 
     @classmethod
-    def convert_month(self, index):
+    def convert_month(cls, index):
+        index = int(index)
 
-        return MONTHS[int(index) - 1]
+        if index > 12 or index < 1:
+            return False
+
+        return MONTHS[index - 1]
 
 
 
@@ -81,6 +85,10 @@ class AutoSearch:
             months = [x.value for x in self.years[year]]
             if self.convert_month(current_key) in months:
                 res.append(self.years[year])
+
+            else:
+                self.onAlert("Warning", "Bulan tidak valid!")
+                return
 
         return res
 
@@ -107,6 +115,11 @@ class AutoSearch:
 
 
         month = self.convert_month(month)
+
+        if not month:
+            self.onAlert("Warning", "Bulan tidak valid!")
+            return
+
         ex_ = re.compile(r"\w*" + month)
 
 

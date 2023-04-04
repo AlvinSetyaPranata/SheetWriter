@@ -49,7 +49,6 @@ class Writer(XlsSupport):
 
 
         if self._xls_type:
-            print("asd")
             row, col = self.convert_coord_xls(coord, reverse=True)
             self._ws.write(row+1, col, value)
             # easyxf("align: horiz center, vert center")

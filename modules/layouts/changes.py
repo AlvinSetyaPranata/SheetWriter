@@ -21,6 +21,10 @@ class ChangesLayout(BaseLayout):
         self.f_handler = f_handler
         self.loader = loader
 
+        self.item_counter_vars = StringVar()
+        self.item_counter_vars.set("Jumlah barang terinput: 0")
+        self.item_counter = 0
+
         self.table = Table(self.main_frame, ("Kode Barang", "Nama Barang", "Bulan", "Tahun", "Kuantitas"), onSelect=self.handle_select, mode="extended")
 
     def load_images(self):
@@ -42,7 +46,7 @@ class ChangesLayout(BaseLayout):
         for item in items:
             table.detach(item)
             self.detached_items.add(item)
-
+            self.update_counter(-1)
 
         self.remove_btn.configure(state=DISABLED)
         self.undo_btn.configure(state=NORMAL)
@@ -56,14 +60,24 @@ class ChangesLayout(BaseLayout):
         if not file:
             return
 
-        # for row in self.loader.load(file):
         
         self.table.add_row(self.loader.load(file))
+
+
+    def update_counter(self, total):
+        """
+        if want to decrase by one then pass :total as negative value, and vice verca
+        """
+        
+        self.item_counter = self.item_counter + total
+
+        self.item_counter_vars.set(f"Total barang terinput: {self.item_counter}")
         
 
     def handle_undo(self, table):
         for item in self.detached_items:
             table.move(item, '', 0)
+            self.update_counter(1)
 
         self.detached_items.clear()
         self.undo_btn.configure(state=DISABLED)
@@ -76,6 +90,8 @@ class ChangesLayout(BaseLayout):
         self.data_obj.append(
             (autosearch.search_by_code(data[0]), autosearch.search_months(data[2]))
         )
+
+        self.update_counter(1)
 
         self.check_table()
 
@@ -103,6 +119,9 @@ class ChangesLayout(BaseLayout):
         if not _ftarget:
             return
 
+        if not "." in _ftarget:
+            _ftarget += ".xls"  # default extension if file format is not specified
+
 
         w  = Writer(_ftarget, self.src_file_func())
         search = AutoSearch(self.f_handler, self.alert)
@@ -112,6 +131,7 @@ class ChangesLayout(BaseLayout):
 
         for row in self.table.table.get_children():
             code, _, month, year, value = self.table.table.item(row)["values"]
+            # print(search.find_code_obj(str(code)))
 
             row_code, _ = XlsSupport.split_coord(search.find_code_obj(str(code))[0].coordinate)
             _, col_month = XlsSupport.split_coord(search.find_month_coord(str(year), str(month))[0].coordinate)
@@ -162,6 +182,9 @@ class ChangesLayout(BaseLayout):
 
         self.load_btn = Button(self.command_sector, text="Load Backup", command=self.load_)
 
+        # Frame for item counter
+        self.item_counter_frame = Frame(self.main_frame)
+
 
     def render(self):
         self._prepare_obj()
@@ -174,4 +197,9 @@ class ChangesLayout(BaseLayout):
 
         # table
         self.table.render()
+
+        # render counter widget
+        self.item_counter_frame.pack(anchor='w')
+        Label(self.item_counter_frame, textvariable=self.item_counter_vars).pack(side=LEFT)
+
         self._rendered = True
